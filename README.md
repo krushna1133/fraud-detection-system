@@ -1,20 +1,23 @@
-# 🚨 Fraud Detection System (Spring Boot + React)
+# 🚨 Fraud Detection System (Spring Boot + React + ML)
 
 ## 📌 Overview
 
-A full-stack fraud detection system that analyzes financial transactions and flags suspicious activity using rule-based logic.
+A full-stack fraud detection system that:
+
+* Detects fraud in transactions (rule-based)
+* Detects fraud in messages (ML-based)
 
 ---
 
-# 🛠️ Requirements (Install Before Starting)
+# 🛠️ Requirements
 
-Make sure you have:
+Install before starting:
 
 * Java 17
-* Node.js (v16 or higher)
-* Maven (or use mvnw wrapper)
+* Node.js (v16+)
+* Python 3.x
+* Maven
 * Git
-* VS Code / IntelliJ
 
 ---
 
@@ -23,72 +26,39 @@ Make sure you have:
 ```
 fraud-detection-system/
 │
-├── backend/      → Spring Boot API
-├── frontend/     → React App
+├── backend/        → Spring Boot API
+├── frontend/       → React App
+├── ml-model/       → ML Model + Flask API
 └── README.md
 ```
 
 ---
 
-# 🚀 Step-by-Step Setup
+# 🚀 How to Run the Project (IMPORTANT)
+
+⚠️ You must run **3 things simultaneously**:
 
 ---
 
-## 🔹 Step 1: Create Project Folder
+# 🔹 Step 1: Run ML Model (Flask API)
 
-```
-mkdir fraud-detection-system
-cd fraud-detection-system
-```
-
----
-
-## 🔹 Step 2: Create Backend (Spring Boot)
-
-### Option: Using Spring Initializr (VS Code / Browser)
-
-* Project: Maven
-* Language: Java
-* Spring Boot: Latest
-* Group: com.fraud
-* Artifact: fraud-detection
-
-### Add Dependencies:
-
-* Spring Web
-* Spring Data JPA
-* MySQL Driver
-* Lombok
-
-👉 Generate project and place inside `backend/`
-
----
-
-## 🔹 Step 3: Configure Database (H2 for development)
-
-Edit:
-
-```
-backend/src/main/resources/application.properties
+```bash
+cd ml-model
+pip install flask pandas scikit-learn joblib
+python ml_api.py
 ```
 
-Add:
+👉 Runs on:
 
 ```
-spring.datasource.url=jdbc:h2:mem:testdb
-spring.datasource.driver-class-name=org.h2.Driver
-spring.datasource.username=sa
-spring.datasource.password=
-
-spring.jpa.hibernate.ddl-auto=update
-spring.h2.console.enabled=true
+http://localhost:5000
 ```
 
 ---
 
-## 🔹 Step 4: Run Backend
+# 🔹 Step 2: Run Backend (Spring Boot)
 
-```
+```bash
 cd backend
 ./mvnw spring-boot:run
 ```
@@ -101,84 +71,10 @@ http://localhost:8080
 
 ---
 
-## 🔹 Step 5: Create Backend Structure
+# 🔹 Step 3: Run Frontend (React)
 
-Inside:
-
-```
-src/main/java/com/fraud/fraud_detection/
-```
-
-Create packages:
-
-```
-model/
-repository/
-service/
-controller/
-```
-
----
-
-## 🔹 Step 6: Create Entity (Transaction)
-
-* Fields: amount, location, device, timestamp, fraud
-* Use `@Entity` annotation
-
----
-
-## 🔹 Step 7: Create Repository
-
-* Extend `JpaRepository`
-* Add custom methods like:
-
-  * findByFraud(true)
-
----
-
-## 🔹 Step 8: Create Service Layer
-
-* Add fraud detection logic:
-
-  * High amount (>50000)
-  * Suspicious time (2–4 AM)
-  * Multiple small transactions
-
----
-
-## 🔹 Step 9: Create Controller
-
-Endpoints:
-
-```
-POST /api/transactions
-GET /api/transactions
-GET /api/transactions/fraud
-```
-
----
-
-## 🔹 Step 10: Add Swagger (API Docs)
-
-Add dependency:
-
-```
-org.springdoc:springdoc-openapi-starter-webmvc-ui
-```
-
-Access:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
-
----
-
-## 🔹 Step 11: Create Frontend (React)
-
-```
-cd ../frontend
-npx create-react-app .
+```bash
+cd frontend
 npm install
 npm start
 ```
@@ -191,50 +87,104 @@ http://localhost:3000
 
 ---
 
-## 🔹 Step 12: Connect Frontend to Backend
-
-Use fetch API:
+# 🔗 How System Works
 
 ```
-http://localhost:8080/api/transactions
+Frontend → Spring Boot → Flask ML API → Model → Response → UI
 ```
 
 ---
 
-## 🔹 Step 13: Build UI
+# 🧠 Fraud Detection Features
 
-Features:
+## 1️⃣ Transaction Fraud Detection
 
-* Add transaction form
-* Transaction table
-* Fraud status (Safe / Fraud)
-* Analytics (total, fraud %, count)
-
----
-
-# 🧠 Fraud Detection Logic
+Rules:
 
 * Amount > 50000 → Fraud
-* Time between 2–4 AM → Fraud
-* Many small transactions → Suspicious
+* Suspicious time (2–4 AM)
+* Location anomaly
 
 ---
 
-# 📊 Features
+## 2️⃣ Message Fraud Detection (ML)
 
-* Full-stack application
-* REST API with Swagger
-* Real-time fraud detection
-* Dashboard with analytics
+* User pastes message
+* ML model predicts fraud score (0–10)
+
+---
+
+# 🔌 API Endpoints
+
+## Transaction APIs
+
+| Method | Endpoint                | Description     |
+| ------ | ----------------------- | --------------- |
+| POST   | /api/transactions       | Add transaction |
+| GET    | /api/transactions       | Get all         |
+| GET    | /api/transactions/fraud | Fraud only      |
+
+---
+
+## ML API (via Spring Boot)
+
+| Method | Endpoint                  | Description           |
+| ------ | ------------------------- | --------------------- |
+| POST   | /api/transactions/predict | Predict fraud message |
+
+---
+
+# 🧪 Sample Request (ML)
+
+```json
+{
+  "message": "You won ₹1,00,000 click now"
+}
+```
+
+Response:
+
+```json
+{
+  "fraudScore": 9
+}
+```
+
+---
+
+# 🎨 Frontend Features
+
+* Dashboard UI
+* KPI Analytics cards
+* Transaction table
+* Message fraud detection UI
+* Clean navigation (Home → Feature pages)
+
+---
+
+# ⚙️ Technologies Used
+
+* Spring Boot
+* React.js
+* Flask
+* scikit-learn
+* Tailwind CSS
+
+---
+
+# ⚠️ Notes
+
+* Flask must be running before prediction
+* Backend depends on ML API
+* Using H2 (default) or MySQL
 
 ---
 
 # 🚀 Future Improvements
 
 * JWT Authentication
-* Machine Learning model
-* Cloud deployment (AWS / Railway)
-* Real-time monitoring
+* Better ML model (BERT)
+* Cloud deployment
+* Real-time fraud monitoring
 
 ---
-
