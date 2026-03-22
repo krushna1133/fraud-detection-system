@@ -9,7 +9,7 @@ import java.util.Map;
 @Service
 public class MLService {
 
-    private final String ML_API_URL = "http://localhost:5000/predict";
+    private final String ML_API_URL = "http://localhost:8080/predict";
 
     private final RestTemplate restTemplate = new RestTemplate();
 
