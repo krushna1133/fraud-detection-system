@@ -8,7 +8,7 @@ frontend/node_modules/
 
 # Python ML
 ml-model/__pycache__/
-ml-model/*.pkl
+# ml-model/*.pkl
 
 # Env
 .env
